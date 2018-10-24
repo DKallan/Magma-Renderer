@@ -84,8 +84,10 @@ int main(int argc, char *argv[])
 		SDL_LockSurface(surface);
 
 		rasterizer.Clear();
-		rasterizer.SetRenderMode(RenderMode::Both);
+		rasterizer.SetRenderMode(RenderMode::Filled);
 		rasterizer.SetViewMode(ViewMode::Perspective);
+		rasterizer.SetLineColor(LineColor::Normal);
+
 		// Enable rotation
 		bool rotateModel = true;
 

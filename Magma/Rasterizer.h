@@ -23,6 +23,12 @@ enum ViewMode
 	Perspective = 2
 };
 
+enum LineColor
+{
+	Normal = 1,
+	Inverted = 2
+};
+
 class Rasterizer
 {
 protected:
@@ -31,8 +37,9 @@ protected:
 	uint32_t *m_FrameBuffer;
 	unsigned int m_Width, m_Height;
 	float m_Rotation = 0.0f;
-	RenderMode m_RenderMode;
-	ViewMode m_ViewMode;
+	RenderMode m_RenderMode = RenderMode::Lines;
+	ViewMode m_ViewMode = ViewMode::Perspective;
+	LineColor m_LineColor = LineColor::Inverted;
 
 public:
 	void SetFrameBuffer(uint32_t* frameBuffer, unsigned int width, unsigned int height);
@@ -48,6 +55,7 @@ public:
 	void IncreaseRotation(float amount);
 	void SetRenderMode(RenderMode mode);
 	void SetViewMode(ViewMode mode);
+	void SetLineColor(LineColor color);
 };
 
 #endif

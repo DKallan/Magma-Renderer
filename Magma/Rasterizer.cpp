@@ -138,6 +138,14 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 
 	if (m_RenderMode == RenderMode::Lines || m_RenderMode == RenderMode::Both)
 	{
+		// Invert the vertex colors so the lines are always visible.
+		if (m_LineColor == LineColor::Inverted) 
+		{
+			colorA = Color::white() - colorA;
+			colorB = Color::white() - colorB;
+			colorC = Color::white() - colorC;
+		}
+
 		// Draw the wireframe in white
 		DrawLine(colorA, vertexA.x, vertexA.y, colorB, vertexB.x, vertexB.y);
 		DrawLine(colorB, vertexB.x, vertexB.y, colorC, vertexC.x, vertexC.y);
@@ -222,4 +230,9 @@ void Rasterizer::SetRenderMode(RenderMode mode)
 void Rasterizer::SetViewMode(ViewMode mode)
 {
 	m_ViewMode = mode;
+}
+
+void Rasterizer::SetLineColor(LineColor color)
+{
+	m_LineColor = color;
 }
