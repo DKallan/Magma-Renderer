@@ -83,14 +83,13 @@ int main(int argc, char *argv[])
 		rasterizer.Clear();
 		rasterizer.SetRenderMode(RenderMode::Both);
 		
-		glm::vec2 pointA = glm::vec2(0.2f * WINDOW_WIDTH, 0.2f * WINDOW_WIDTH);
-		glm::vec2 pointB = glm::vec2(0.6f * WINDOW_WIDTH, 0.2f * WINDOW_WIDTH);
-		glm::vec2 pointC = glm::vec2(0.4f * WINDOW_WIDTH, 0.5f * WINDOW_WIDTH);
+		glm::vec4 pointA = glm::vec4(0.75f, 0.75f, 1.0f, 1.0f);
+		glm::vec4 pointB = glm::vec4(0.75f, 0.25f, 1.0f, 1.0f);
+		glm::vec4 pointC = glm::vec4(0.25f, 0.25f, 1.0f, 1.0f);
+		glm::vec4 pointD = glm::vec4(0.25f, 0.75f, 1.0f, 1.0f);
 
-		rasterizer.DrawLine(Color::white(), pointA.x, pointA.y, Color::white(), pointB.x, pointB.y);
-		rasterizer.DrawLine(Color::white(), pointB.x, pointB.y, Color::white(), pointC.x, pointC.y);
-		rasterizer.DrawLine(Color::white(), pointC.x, pointC.y, Color::white(), pointA.x, pointA.y);
-
+		rasterizer.DrawTriangle(pointA, pointB, pointC, Color::red(), Color::green(), Color::blue());
+		rasterizer.DrawTriangle(pointA, pointC, pointD, Color::red(), Color::blue(), Color::orange());
 
 		// Unlock and update the surface.
 		SDL_UnlockSurface(surface);

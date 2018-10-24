@@ -1,9 +1,13 @@
 #ifndef _RASTERIZER_H_
 #define _RASTERIZER_H_
 
+#include <algorithm>
+
 #include "glm.hpp"
 
 #include "Color.h"
+#include "EdgeEquation.h"
+#include "ParameterEquation.h"
 
 enum RenderMode
 {
@@ -27,6 +31,8 @@ public:
 	void Clear();
 
 	void DrawLine(const Color &color1, float x1, float y1, const Color &color2, float x2, float y2);
+	void DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 vertexC, Color colorA, Color colorB, Color colorC);
+	void FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 vertexC, Color colorA, Color colorB, Color colorC);
 
 	void IncreaseRotation(float amount);
 	void SetRenderMode(RenderMode);

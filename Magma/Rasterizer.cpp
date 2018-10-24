@@ -95,6 +95,74 @@ void Rasterizer::DrawLine(const Color &color1, float x1, float y1, const Color &
 	}
 }
 
+void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 vertexC, Color colorA, Color colorB, Color colorC)
+{
+	// Reverse the y coordinate so we draw from the bottom left to the top right.
+	vertexA.y = -vertexA.y + 1;
+	vertexB.y = -vertexB.y + 1;
+	vertexC.y = -vertexC.y + 1;
+
+	// Screen space pixels.
+	vertexA.x = vertexA.x * m_Width;
+	vertexA.y = vertexA.y * m_Height;
+	vertexB.x = vertexB.x * m_Width;
+	vertexB.y = vertexB.y * m_Height;
+	vertexC.x = vertexC.x * m_Width;
+	vertexC.y = vertexC.y * m_Height;
+
+	// Fill the triangle if specified to do so.
+	if (m_RenderMode == RenderMode::Filled || m_RenderMode == RenderMode::Both)
+		FillTriangle(vertexA, vertexB, vertexC, colorA, colorB, colorC);
+
+	if (m_RenderMode == RenderMode::Lines || m_RenderMode == RenderMode::Both)
+	{
+		// Draw the wireframe in white
+		DrawLine(colorA, vertexA.x, vertexA.y, colorB, vertexB.x, vertexB.y);
+		DrawLine(colorB, vertexB.x, vertexB.y, colorC, vertexC.x, vertexC.y);
+		DrawLine(colorC, vertexC.x, vertexC.y, colorA, vertexA.x, vertexA.y);
+	}
+}
+
+
+void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 vertexC, Color colorA, Color colorB, Color colorC)
+{
+	// Compute triangle bounding box. 
+	int minX = std::min(std::min(vertexA.x, vertexB.x), vertexC.x);
+	int maxX = std::max(std::max(vertexA.x, vertexB.x), vertexC.x);
+	int minY = std::min(std::min(vertexA.y, vertexB.y), vertexC.y);
+	int maxY = std::max(std::max(vertexA.y, vertexB.y), vertexC.y);
+
+	// Compute edge equations. 
+	EdgeEquation e0(vertexA, vertexB);
+	EdgeEquation e1(vertexB, vertexC);
+	EdgeEquation e2(vertexC, vertexA);
+
+	float area = 0.5 * (e0.c + e1.c + e2.c);
+
+	ParameterEquation R(colorA.R, colorB.R, colorC.R, e0, e1, e2, area);
+	ParameterEquation G(colorA.G, colorB.G, colorC.G, e0, e1, e2, area);
+	ParameterEquation B(colorA.B, colorB.B, colorC.B, e0, e1, e2, area);
+
+	//Check if triangle is backfacing. 
+	if (area < 0)
+		return;
+
+	// Add 0.5 to sample at pixel centers. 
+	for (float x = minX + 0.5f, xm = maxX + 0.5f; x <= xm; x += 1.0f)
+	{
+		for (float y = minY + 0.5f, ym = maxY + 0.5f; y <= ym; y += 1.0f)
+		{
+			if (e0.test(x, y) && e1.test(x, y) && e2.test(x, y))
+			{
+				float r = R.evaluate(x, y);
+				float g = G.evaluate(x, y);
+				float b = B.evaluate(x, y);
+				SetPixel(x, y, Color(r, g, b));
+			}
+		}
+	}
+}
+
 void Rasterizer::IncreaseRotation(float amount)
 {
 	m_Rotation += amount;

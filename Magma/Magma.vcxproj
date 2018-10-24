@@ -122,11 +122,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Color.cpp" />
+    <ClCompile Include="EdgeEquation.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ParameterEquation.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Color.h" />
+    <ClInclude Include="EdgeEquation.h" />
+    <ClInclude Include="ParameterEquation.h" />
     <ClInclude Include="Rasterizer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
