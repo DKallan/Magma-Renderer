@@ -89,10 +89,10 @@ int main(int argc, char *argv[])
 		// Vertex Buffer
 		float vertices[] = {
 			// location			
-			 0.5f,  0.5f, 1.0f,
-			 0.5f, -0.5f, 1.0f,
-			-0.5f, -0.5f, 1.0f,
-			-0.5f,  0.5f, 1.0f
+			 0.5f,  0.5f, 1.0f,		0.0f, 1.0f, 0.0f, // 0 frontTopRight
+			 0.5f, -0.5f, 1.0f,		0.0f, 0.0f, 1.0f, // 1 frontTopLeft
+			-0.5f, -0.5f, 1.0f,		1.0f, 0.0f, 0.0f, // 2 frontBottomRight
+			-0.5f,  0.5f, 1.0f,		1.0f, 0.5f, 0.0f  // 3 frontBottomLeft
 		};
 
 		// Index Buffer
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 		};
 
 		// Draw the vertices from the vertex buffer, using the index buffer.
-		rasterizer.DrawVertices(vertices, indices, (sizeof(indices) / sizeof(indices[0]) / 3));
+		rasterizer.DrawVertices(vertices, indices, (sizeof(indices) / sizeof(indices[0]) / 3), 6);
 
 		// Unlock and update the surface.
 		SDL_UnlockSurface(surface);
