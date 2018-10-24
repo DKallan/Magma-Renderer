@@ -6,6 +6,8 @@ void Rasterizer::SetFrameBuffer(uint32_t *frameBuffer, unsigned int width, unsig
 	m_FrameBuffer = frameBuffer;
 	m_Width = width;
 	m_Height = height;
+	m_maxX = width;
+	m_maxY = height;
 }
 
 /// Set the color value for the given pixel.
@@ -132,16 +134,24 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	int minY = std::min(std::min(vertexA.y, vertexB.y), vertexC.y);
 	int maxY = std::max(std::max(vertexA.y, vertexB.y), vertexC.y);
 
+	// Clip to scissor rect. 
+	minX = std::max(minX, m_minX);
+	maxX = std::min(maxX, m_maxX);
+	minY = std::max(minY, m_minY);
+	maxY = std::min(maxY, m_maxY);
+	maxY = std::min(maxY, m_maxY);
+
 	// Compute edge equations. 
 	EdgeEquation e0(vertexA, vertexB);
 	EdgeEquation e1(vertexB, vertexC);
 	EdgeEquation e2(vertexC, vertexA);
 
 	float area = 0.5 * (e0.c + e1.c + e2.c);
-
-	ParameterEquation R(colorA.R, colorB.R, colorC.R, e0, e1, e2, area);
-	ParameterEquation G(colorA.G, colorB.G, colorC.G, e0, e1, e2, area);
-	ParameterEquation B(colorA.B, colorB.B, colorC.B, e0, e1, e2, area);
+	
+	// Compute equations for color.
+	ParameterEquation R(colorC.R, colorA.R, colorB.R, e0, e1, e2, area);
+	ParameterEquation G(colorC.G, colorA.G, colorB.G, e0, e1, e2, area);
+	ParameterEquation B(colorC.B, colorA.B, colorB.B, e0, e1, e2, area);
 
 	//Check if triangle is backfacing. 
 	if (area < 0)

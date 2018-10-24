@@ -19,6 +19,8 @@ enum RenderMode
 class Rasterizer
 {
 protected:
+	int m_minX, m_minY;
+	int m_maxX, m_maxY;
 	uint32_t *m_FrameBuffer;
 	unsigned int m_Width, m_Height;
 	float m_Rotation = 0.0f;

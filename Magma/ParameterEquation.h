@@ -9,8 +9,8 @@ public:
 	float a, b, c;
 
 public:
-	ParameterEquation(float, float, float, const EdgeEquation &e0, const EdgeEquation &e1, const EdgeEquation &e2, float);
-	float evaluate(float, float) const;
+	ParameterEquation(float p0, float p1, float p2, const EdgeEquation &e0, const EdgeEquation &e1, const EdgeEquation &e2, float);
+	float evaluate(float x, float y) const;
 };
 
 #endif
