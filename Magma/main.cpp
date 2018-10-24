@@ -2,6 +2,8 @@
 
 #include "SDL.h"
 
+#include "Rasterizer.h"
+
 #define WINDOW_WIDTH 800
 #define WINDOW_HEIGHT 600
 
@@ -65,6 +67,10 @@ int main(int argc, char *argv[])
 	// Copy the surface to the window.
 	SDL_UpdateWindowSurface(window);
 
+	// Create a rasterizer and frame buffer.
+	Rasterizer rasterizer;
+	rasterizer.SetFrameBuffer((uint32_t *)surface->pixels, WINDOW_WIDTH, WINDOW_HEIGHT);
+
 	while (g_Running)
 	{
 		SDL_Event event;
@@ -74,9 +80,18 @@ int main(int argc, char *argv[])
 		// Lock the surface.
 		SDL_LockSurface(surface);
 
-		// Draw stuff.
+		rasterizer.Clear();
+		rasterizer.SetRenderMode(RenderMode::Both);
+		
+		glm::vec2 pointA = glm::vec2(0.2f * WINDOW_WIDTH, 0.2f * WINDOW_WIDTH);
+		glm::vec2 pointB = glm::vec2(0.6f * WINDOW_WIDTH, 0.2f * WINDOW_WIDTH);
+		glm::vec2 pointC = glm::vec2(0.4f * WINDOW_WIDTH, 0.5f * WINDOW_WIDTH);
 
-	
+		rasterizer.DrawLine(Color::white(), pointA.x, pointA.y, Color::white(), pointB.x, pointB.y);
+		rasterizer.DrawLine(Color::white(), pointB.x, pointB.y, Color::white(), pointC.x, pointC.y);
+		rasterizer.DrawLine(Color::white(), pointC.x, pointC.y, Color::white(), pointA.x, pointA.y);
+
+
 		// Unlock and update the surface.
 		SDL_UnlockSurface(surface);
 		SDL_UpdateWindowSurface(window);
