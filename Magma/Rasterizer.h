@@ -4,6 +4,7 @@
 #include <algorithm>
 
 #include "glm.hpp"
+#include "gtc/matrix_transform.hpp"
 
 #include "Color.h"
 #include "EdgeEquation.h"

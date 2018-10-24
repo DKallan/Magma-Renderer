@@ -104,6 +104,13 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	vertexB.y = -vertexB.y;
 	vertexC.y = -vertexC.y;
 
+	glm::mat4 projection = glm::perspective(glm::radians(90.0f), ((float)m_Width / (float)m_Height), 0.1f, 100.0f);
+
+	// Apply all matrixes.
+	vertexA = projection * vertexA;
+	vertexB = projection * vertexB;
+	vertexC = projection * vertexC;
+
 	// ndc space (normalized device coordinates)
 	vertexA = (vertexA + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
 	vertexB = (vertexB + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;

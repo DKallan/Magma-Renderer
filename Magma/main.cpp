@@ -88,11 +88,15 @@ int main(int argc, char *argv[])
 
 		// Vertex Buffer
 		float vertices[] = {
-			// location			
-			 0.5f,  0.5f, 1.0f,		0.0f, 1.0f, 0.0f, // 0 frontTopRight
-			 0.5f, -0.5f, 1.0f,		0.0f, 0.0f, 1.0f, // 1 frontTopLeft
-			-0.5f, -0.5f, 1.0f,		1.0f, 0.0f, 0.0f, // 2 frontBottomRight
-			-0.5f,  0.5f, 1.0f,		1.0f, 0.5f, 0.0f  // 3 frontBottomLeft
+			// location				// color
+			0.5f,  0.5f,  0.5f,		0.0f, 1.0f, 0.0f, // 0 frontTopRight
+			0.5f, -0.5f,  0.5f,		0.0f, 0.0f, 1.0f, // 1 frontBottomRight
+		   -0.5f, -0.5f,  0.5f,		1.0f, 0.0f, 0.0f, // 2 frontBottomLeft
+		   -0.5f,  0.5f,  0.5f,		1.0f, 0.5f, 0.0f, // 3 frontTopLeft
+		   -0.5f,  0.5f, -0.5f,		0.0f, 1.0f, 0.0f, // 4 backTopLeft
+		   -0.5f, -0.5f, -0.5f,		0.0f, 0.0f, 1.0f, // 5 backBottomLeft
+			0.5f, -0.5f, -0.5f,		1.0f, 0.0f, 0.0f, // 6 backBottomRight
+			0.5f,  0.5f, -0.5f,		1.0f, 0.5f, 0.0f  // 7 backTopRight
 		};
 
 		// Index Buffer
