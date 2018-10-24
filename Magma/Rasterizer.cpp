@@ -100,9 +100,14 @@ void Rasterizer::DrawLine(const Color &color1, float x1, float y1, const Color &
 void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 vertexC, Color colorA, Color colorB, Color colorC)
 {
 	// Reverse the y coordinate so we draw from the bottom left to the top right.
-	vertexA.y = -vertexA.y + 1;
-	vertexB.y = -vertexB.y + 1;
-	vertexC.y = -vertexC.y + 1;
+	vertexA.y = -vertexA.y;
+	vertexB.y = -vertexB.y;
+	vertexC.y = -vertexC.y;
+
+	// ndc space (normalized device coordinates)
+	vertexA = (vertexA + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
+	vertexB = (vertexB + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
+	vertexC = (vertexC + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
 
 	// Screen space pixels.
 	vertexA.x = vertexA.x * m_Width;
@@ -170,6 +175,18 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 				SetPixel(x, y, Color(r, g, b));
 			}
 		}
+	}
+}
+
+void Rasterizer::DrawVertices(const float* vertices, const int* indices, int amountOfIndices)
+{
+	for (int i = 0; i < amountOfIndices; i++)
+	{
+		glm::vec4 pointA = glm::vec4(vertices[indices[i * 3]	 * 3], vertices[indices[i * 3]	   * 3 + 1], vertices[indices[i * 3]	 * 3 + 2], 1.0f);
+		glm::vec4 pointB = glm::vec4(vertices[indices[i * 3 + 1] * 3], vertices[indices[i * 3 + 1] * 3 + 1], vertices[indices[i * 3 + 1] * 3 + 2], 1.0f);
+		glm::vec4 pointC = glm::vec4(vertices[indices[i * 3 + 2] * 3], vertices[indices[i * 3 + 2] * 3 + 1], vertices[indices[i * 3 + 2] * 3 + 2], 1.0f);
+
+		DrawTriangle(pointA, pointB, pointC, Color::red(), Color::green(), Color::blue());
 	}
 }
 

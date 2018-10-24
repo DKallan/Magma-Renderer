@@ -83,13 +83,26 @@ int main(int argc, char *argv[])
 		rasterizer.Clear();
 		rasterizer.SetRenderMode(RenderMode::Both);
 		
-		glm::vec4 pointA = glm::vec4(0.75f, 0.75f, 1.0f, 1.0f);
-		glm::vec4 pointB = glm::vec4(0.75f, 0.25f, 1.0f, 1.0f);
-		glm::vec4 pointC = glm::vec4(0.25f, 0.25f, 1.0f, 1.0f);
-		glm::vec4 pointD = glm::vec4(0.25f, 0.75f, 1.0f, 1.0f);
+		// Enable rotation
+		bool rotateModel = false;
 
-		rasterizer.DrawTriangle(pointA, pointB, pointC, Color::red(), Color::green(), Color::blue());
-		rasterizer.DrawTriangle(pointA, pointC, pointD, Color::red(), Color::blue(), Color::orange());
+		// Vertex Buffer
+		float vertices[] = {
+			// location			
+			 0.5f,  0.5f, 1.0f,
+			 0.5f, -0.5f, 1.0f,
+			-0.5f, -0.5f, 1.0f,
+			-0.5f,  0.5f, 1.0f
+		};
+
+		// Index Buffer
+		int indices[] = {
+			0, 1, 2,
+			0, 2, 3
+		};
+
+		// Draw the vertices from the vertex buffer, using the index buffer.
+		rasterizer.DrawVertices(vertices, indices, (sizeof(indices) / sizeof(indices[0]) / 3));
 
 		// Unlock and update the surface.
 		SDL_UnlockSurface(surface);
