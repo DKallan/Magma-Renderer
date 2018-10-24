@@ -25,4 +25,21 @@ LineColor:
 ```
 
 ### Planned ###
-At least planning to implement a z-buffer to make sure everything is rendered correctly.
+- At least planning to implement a z-buffer to make sure everything is rendered correctly.
+- Optimize the EdgeEquation using block based rendering, although I need to do some research on that (I do not want to blindly copy some tutorial like trenki2's, without understanding it fully).
+
+### Literature used ####
+I obviously did not re-invent the wheel, nor did I come up with all code myself. I will post the links I have used here:
+
+(1) https://learnopengl.com/Getting-started/Coordinate-Systems
+
+(2) https://trenki2.github.io/blog/2017/06/06/developing-a-software-renderer-part1/ 
+
+(3) http://www.cs.unc.edu/~blloyd/comp770/Lecture08.pdf 
+
+(4) http://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture7/triangles.html 
+
+1. I used this mainly for the matrices and understanding them.
+2. I used this for the basics of Edge Equations.
+3. I used this for information about rasterization.
+4. I used this aswell for some info on Edge Equations and code examples.
