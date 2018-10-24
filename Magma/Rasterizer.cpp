@@ -103,13 +103,20 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	vertexA.y = -vertexA.y;
 	vertexB.y = -vertexB.y;
 	vertexC.y = -vertexC.y;
+	
+	glm::mat4 projectionMatrix, viewMatrix, model;
 
-	glm::mat4 projection = glm::perspective(glm::radians(90.0f), ((float)m_Width / (float)m_Height), 0.1f, 100.0f);
+	if(m_ViewMode == ViewMode::Orthographic)
+		projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 2.0f, 100.0f);
+	else
+		projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)m_Width / (float)m_Height), 0.1f, 100.0f);
+
+	viewMatrix = glm::lookAt(glm::vec3(0.0f, 0.0f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Apply all matrixes.
-	vertexA = projection * vertexA;
-	vertexB = projection * vertexB;
-	vertexC = projection * vertexC;
+	vertexA = projectionMatrix * viewMatrix * model * vertexA;
+	vertexB = projectionMatrix * viewMatrix * model * vertexB;
+	vertexC = projectionMatrix * viewMatrix * model * vertexC;
 
 	// ndc space (normalized device coordinates)
 	vertexA = (vertexA + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
@@ -206,7 +213,12 @@ void Rasterizer::IncreaseRotation(float amount)
 	m_Rotation += amount;
 }
 
-void Rasterizer::SetRenderMode(RenderMode rendermode)
+void Rasterizer::SetRenderMode(RenderMode mode)
 {
-	m_RenderMode = rendermode;
+	m_RenderMode = mode;
+}
+
+void Rasterizer::SetViewMode(ViewMode mode)
+{
+	m_ViewMode = mode;
 }

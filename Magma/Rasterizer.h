@@ -17,6 +17,12 @@ enum RenderMode
 	Both = 3
 };
 
+enum ViewMode
+{
+	Orthographic = 1,
+	Perspective = 2
+};
+
 class Rasterizer
 {
 protected:
@@ -26,6 +32,7 @@ protected:
 	unsigned int m_Width, m_Height;
 	float m_Rotation = 0.0f;
 	RenderMode m_RenderMode;
+	ViewMode m_ViewMode;
 
 public:
 	void SetFrameBuffer(uint32_t* frameBuffer, unsigned int width, unsigned int height);
@@ -39,7 +46,8 @@ public:
 	void DrawVertices(const float*, const int*, int amountOfIndices);
 
 	void IncreaseRotation(float amount);
-	void SetRenderMode(RenderMode);
+	void SetRenderMode(RenderMode mode);
+	void SetViewMode(ViewMode mode);
 };
 
 #endif

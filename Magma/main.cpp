@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 
 		rasterizer.Clear();
 		rasterizer.SetRenderMode(RenderMode::Lines);
-		
+		rasterizer.SetViewMode(ViewMode::Perspective);
 		// Enable rotation
 		bool rotateModel = false;
 
