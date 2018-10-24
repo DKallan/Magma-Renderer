@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 		SDL_LockSurface(surface);
 
 		rasterizer.Clear();
-		rasterizer.SetRenderMode(RenderMode::Both);
+		rasterizer.SetRenderMode(RenderMode::Lines);
 		
 		// Enable rotation
 		bool rotateModel = false;
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
 		};
 
 		// Draw the vertices from the vertex buffer, using the index buffer.
-		rasterizer.DrawVertices(vertices, indices, (sizeof(indices) / sizeof(indices[0]) / 3), 6);
+		rasterizer.DrawVertices(vertices, indices, (sizeof(indices) / sizeof(indices[0]) / 3));
 
 		// Unlock and update the surface.
 		SDL_UnlockSurface(surface);

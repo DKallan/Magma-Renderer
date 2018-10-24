@@ -178,15 +178,15 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	}
 }
 
-void Rasterizer::DrawVertices(const float* vertices, const int* indices, int amountOfIndices, int bufferSize)
+void Rasterizer::DrawVertices(const float* vertices, const int* indices, int amountOfIndices)
 {
 	for (int i = 0; i < amountOfIndices; i++)
 	{
-		glm::vec4 pointA = glm::vec4(vertices[indices[i * 3]	 * bufferSize], vertices[indices[i * 3]	   * bufferSize + 1], vertices[indices[i * 3]	 * bufferSize + 2], 1.0f);
-		glm::vec4 pointB = glm::vec4(vertices[indices[i * 3 + 1] * bufferSize], vertices[indices[i * 3 + 1] * bufferSize + 1], vertices[indices[i * 3 + 1] * bufferSize + 2], 1.0f);
-		glm::vec4 pointC = glm::vec4(vertices[indices[i * 3 + 2] * bufferSize], vertices[indices[i * 3 + 2] * bufferSize + 1], vertices[indices[i * 3 + 2] * bufferSize + 2], 1.0f);
+		glm::vec4 pointA = glm::vec4(vertices[indices[i * 3]	 * 6], vertices[indices[i * 3]	   * 6 + 1], vertices[indices[i * 3]	 * 6 + 2], 1.0f);
+		glm::vec4 pointB = glm::vec4(vertices[indices[i * 3 + 1] * 6], vertices[indices[i * 3 + 1] * 6 + 1], vertices[indices[i * 3 + 1] * 6 + 2], 1.0f);
+		glm::vec4 pointC = glm::vec4(vertices[indices[i * 3 + 2] * 6], vertices[indices[i * 3 + 2] * 6 + 1], vertices[indices[i * 3 + 2] * 6 + 2], 1.0f);
 
-		Color colorA = Color(vertices[indices[i * 3] * 6 + 3], vertices[indices[i * 3] * 6 + 4], vertices[indices[i * 3] * 6 + 5]);
+		Color colorA = Color(vertices[indices[i * 3]	 * 6 + 3], vertices[indices[i * 3]	   * 6 + 4], vertices[indices[i * 3]	 * 6 + 5]);
 		Color colorB = Color(vertices[indices[i * 3 + 1] * 6 + 3], vertices[indices[i * 3 + 1] * 6 + 4], vertices[indices[i * 3 + 1] * 6 + 5]);
 		Color colorC = Color(vertices[indices[i * 3 + 2] * 6 + 3], vertices[indices[i * 3 + 2] * 6 + 4], vertices[indices[i * 3 + 2] * 6 + 5]);
 
