@@ -39,7 +39,6 @@ void Rasterizer::DrawLine(const Color &color1, glm::vec3 pointA, const Color &co
 {
 	float xdiff = (pointB.x - pointA.x);
 	float ydiff = (pointB.y - pointA.y);
-	float zdiff = (pointB.z - pointA.z);
 
 	// if the points are the same, simply draw one point.
 	if (xdiff == 0.0f && ydiff == 0.0f)
@@ -67,18 +66,9 @@ void Rasterizer::DrawLine(const Color &color1, glm::vec3 pointA, const Color &co
 		float slope = ydiff / xdiff;
 		for (float x = xmin; x <= xmax; x += 1.0f)
 		{
-			float y = pointA.y + ((x - pointA.x) * slope);
-
-			// calculate depth data and position in zBuffer.
-			float z = pointA.z + ((zdiff / xmax) * x);
-			int pixelPos = (int)y * m_Width + (int)x;
-			
-			if (m_zBuffer[pixelPos] <= z)
-			{
-				m_zBuffer[pixelPos] = z - 0.01f;
-				Color color = color1 + ((color2 - color1) * ((x - pointA.x) / xdiff));
-				SetPixel(x, y, color);
-			}
+			float y = pointA.y + ((x - pointA.x) * slope);			
+			Color color = color1 + ((color2 - color1) * ((x - pointA.x) / xdiff));
+			SetPixel(x, y, color);
 		}
 	}
 	else
@@ -101,17 +91,8 @@ void Rasterizer::DrawLine(const Color &color1, glm::vec3 pointA, const Color &co
 		for (float y = ymin; y <= ymax; y += 1.0f)
 		{
 			float x = pointA.x + ((y - pointA.y) * slope);
-			
-			// calculate depth data and position in zBuffer.
-			float z = pointA.z + ((zdiff / ymax) * y);
-			int pixelPos = (int)y * m_Width + (int)x;
-			
-			if (m_zBuffer[pixelPos] <= z)
-			{
-				m_zBuffer[pixelPos] = z - 0.01f;
-				Color color = color1 + ((color2 - color1) * ((y - pointA.y) / ydiff));
-				SetPixel(x, y, color);
-			}
+			Color color = color1 + ((color2 - color1) * ((y - pointA.y) / ydiff));
+			SetPixel(x, y, color);
 		}
 	}
 }
@@ -154,9 +135,6 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	vertexB.y = vertexB.y * m_Height;
 	vertexC.x = vertexC.x * m_Width;
 	vertexC.y = vertexC.y * m_Height;
-
-	// Clear the zBuffer before drawing anything.
-	ClearZBuffer();
 
 	// Fill the triangle if specified to do so.
 	if (m_RenderMode == RenderMode::Filled || m_RenderMode == RenderMode::Both)
@@ -223,15 +201,8 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 				float g = G.evaluate(x, y);
 				float b = B.evaluate(x, y);
 
-				float z = Z.evaluate(x, y);
-				int pixelPos = (int)y * m_Width + (int)x;
-
-				if (m_zBuffer[pixelPos] <= z)
-				{
-					m_zBuffer[pixelPos] = z;
-					Color color = Color(r, g, b);
-					SetPixel(x, y, color);
-				}
+				Color color = Color(r, g, b);
+				SetPixel(x, y, color);
 			}
 		}
 	}
@@ -271,23 +242,4 @@ void Rasterizer::SetViewMode(ViewMode mode)
 void Rasterizer::SetLineColor(LineColor color)
 {
 	m_LineColor = color;
-}
-
-void Rasterizer::ClearZBuffer()
-{
-	if (m_zBuffer != 0)
-	{
-		delete[] m_zBuffer;
-		m_zBuffer = 0;
-	}
-
-	int size = m_Width * m_Height;
-
-	m_zBuffer = new float[size];
-	
-	// set default values.
-	for (int i = 0; i < size; i++)
-	{
-		m_zBuffer[i] = 0.0f;
-	}
 }
