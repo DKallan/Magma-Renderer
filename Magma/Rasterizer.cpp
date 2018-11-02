@@ -1,7 +1,7 @@
 #include "Rasterizer.h"
 
 /// Set the frame buffer with the given dimensions.
-void Rasterizer::SetFrameBuffer(uint32_t *frameBuffer, unsigned int width, unsigned int height)
+void Rasterizer::SetFrameBuffer(uint32_t* frameBuffer, unsigned int width, unsigned int height)
 {
 	m_FrameBuffer = frameBuffer;
 	m_Width = width;
@@ -35,15 +35,16 @@ void Rasterizer::Clear()
 }
 
 /// Draw a line between the first point and the second point.
-void Rasterizer::DrawLine(const Color &color1, float x1, float y1, const Color &color2, float x2, float y2)
+void Rasterizer::DrawLine(const Color &color1, glm::vec3 pointA, const Color &color2, glm::vec3 pointB)
 {
-	float xdiff = (x2 - x1);
-	float ydiff = (y2 - y1);
+	float xdiff = (pointB.x - pointA.x);
+	float ydiff = (pointB.y - pointA.y);
+	float zdiff = (pointB.z - pointA.z);
 
 	// if the points are the same, simply draw one point.
 	if (xdiff == 0.0f && ydiff == 0.0f)
 	{
-		SetPixel(x1, y1, color1);
+		SetPixel(pointA.x, pointA.y, color1);
 		return;
 	}
 
@@ -52,23 +53,32 @@ void Rasterizer::DrawLine(const Color &color1, float x1, float y1, const Color &
 		float xmin, xmax;
 
 		// check which point comes first on the x-axis.
-		if (x1 < x2)
+		if (pointA.x < pointB.x)
 		{
-			xmin = x1;
-			xmax = x2;
+			xmin = pointA.x;
+			xmax = pointB.x;
 		}
 		else
 		{
-			xmin = x2;
-			xmax = x1;
+			xmin = pointB.x;
+			xmax = pointA.x;
 		}
 
 		float slope = ydiff / xdiff;
 		for (float x = xmin; x <= xmax; x += 1.0f)
 		{
-			float y = y1 + ((x - x1) * slope);
-			Color color = color1 + ((color2 - color1) * ((x - x1) / xdiff));
-			SetPixel(x, y, color);
+			float y = pointA.y + ((x - pointA.x) * slope);
+
+			// calculate depth data and position in zBuffer.
+			float z = pointA.z + ((zdiff / xmax) * x);
+			int pixelPos = (int)y * m_Width + (int)x;
+			
+			if (m_zBuffer[pixelPos] <= z)
+			{
+				m_zBuffer[pixelPos] = z - 0.01f;
+				Color color = color1 + ((color2 - color1) * ((x - pointA.x) / xdiff));
+				SetPixel(x, y, color);
+			}
 		}
 	}
 	else
@@ -76,23 +86,32 @@ void Rasterizer::DrawLine(const Color &color1, float x1, float y1, const Color &
 		float ymin, ymax;
 
 		// check which point comes first on the y-axis.
-		if (y1 < y2)
+		if (pointA.y < pointB.y)
 		{
-			ymin = y1;
-			ymax = y2;
+			ymin = pointA.y;
+			ymax = pointB.y;
 		}
 		else
 		{
-			ymin = y2;
-			ymax = y1;
+			ymin = pointB.y;
+			ymax = pointA.y;
 		}
 
 		float slope = xdiff / ydiff;
 		for (float y = ymin; y <= ymax; y += 1.0f)
 		{
-			float x = x1 + ((y - y1) * slope);
-			Color color = color1 + ((color2 - color1) * ((y - y1) / ydiff));
-			SetPixel(x, y, color);
+			float x = pointA.x + ((y - pointA.y) * slope);
+			
+			// calculate depth data and position in zBuffer.
+			float z = pointA.z + ((zdiff / ymax) * y);
+			int pixelPos = (int)y * m_Width + (int)x;
+			
+			if (m_zBuffer[pixelPos] <= z)
+			{
+				m_zBuffer[pixelPos] = z - 0.01f;
+				Color color = color1 + ((color2 - color1) * ((y - pointA.y) / ydiff));
+				SetPixel(x, y, color);
+			}
 		}
 	}
 }
@@ -106,12 +125,8 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	
 	glm::mat4 projectionMatrix, viewMatrix, model;
 
-	if(m_ViewMode == ViewMode::Orthographic)
-		projectionMatrix = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 2.0f, 100.0f);
-	else
-		projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)m_Width / (float)m_Height), 0.1f, 100.0f);
-
-	viewMatrix = glm::lookAt(glm::vec3(0.0f, 1.0f, 1.5f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	projectionMatrix = glm::perspective(glm::radians(90.0f), ((float)m_Width / (float)m_Height), 0.1f, 100.0f);
+	viewMatrix = glm::lookAt(glm::vec3(0.0f, -0.6f, 1.2f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	model = glm::rotate(model, m_Rotation, glm::vec3(0.0f, 1.0f, 0.0f));
 
 	// Apply all matrixes.
@@ -119,6 +134,14 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	vertexB = projectionMatrix * viewMatrix * model * vertexB;
 	vertexC = projectionMatrix * viewMatrix * model * vertexC;
 
+	// Perspective devide if needed.
+	if (m_ViewMode == ViewMode::Perspective)
+	{
+		vertexA = vertexA / vertexA.w;
+		vertexB = vertexB / vertexB.w;
+		vertexC = vertexC / vertexC.w;
+	}
+	
 	// ndc space (normalized device coordinates)
 	vertexA = (vertexA + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
 	vertexB = (vertexB + glm::vec4(1.0f, 1.0f, 0.0f, 0.0f)) / 2.0f;
@@ -132,10 +155,14 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	vertexC.x = vertexC.x * m_Width;
 	vertexC.y = vertexC.y * m_Height;
 
+	// Clear the zBuffer before drawing anything.
+	ClearZBuffer();
+
 	// Fill the triangle if specified to do so.
 	if (m_RenderMode == RenderMode::Filled || m_RenderMode == RenderMode::Both)
 		FillTriangle(vertexA, vertexB, vertexC, colorA, colorB, colorC);
 
+	// Draw the wireframe if specified to do so.
 	if (m_RenderMode == RenderMode::Lines || m_RenderMode == RenderMode::Both)
 	{
 		// Invert the vertex colors so the lines are always visible.
@@ -147,9 +174,9 @@ void Rasterizer::DrawTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 		}
 
 		// Draw the wireframe in white
-		DrawLine(colorA, vertexA.x, vertexA.y, colorB, vertexB.x, vertexB.y);
-		DrawLine(colorB, vertexB.x, vertexB.y, colorC, vertexC.x, vertexC.y);
-		DrawLine(colorC, vertexC.x, vertexC.y, colorA, vertexA.x, vertexA.y);
+		DrawLine(colorA, vertexA, colorB, vertexB);
+		DrawLine(colorB, vertexB, colorC, vertexC);
+		DrawLine(colorC, vertexC, colorA, vertexA);
 	}
 }
 
@@ -167,7 +194,6 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	maxX = std::min(maxX, m_maxX);
 	minY = std::max(minY, m_minY);
 	maxY = std::min(maxY, m_maxY);
-	maxY = std::min(maxY, m_maxY);
 
 	// Compute edge equations. 
 	EdgeEquation e0(vertexA, vertexB);
@@ -180,6 +206,7 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 	ParameterEquation R(colorC.R, colorA.R, colorB.R, e0, e1, e2, area);
 	ParameterEquation G(colorC.G, colorA.G, colorB.G, e0, e1, e2, area);
 	ParameterEquation B(colorC.B, colorA.B, colorB.B, e0, e1, e2, area);
+	ParameterEquation Z(vertexC.z, vertexA.z, vertexB.z, e0, e1, e2, area);
 
 	//Check if triangle is backfacing. 
 	if (area < 0)
@@ -195,7 +222,16 @@ void Rasterizer::FillTriangle(glm::vec4 vertexA, glm::vec4 vertexB, glm::vec4 ve
 				float r = R.evaluate(x, y);
 				float g = G.evaluate(x, y);
 				float b = B.evaluate(x, y);
-				SetPixel(x, y, Color(r, g, b));
+
+				float z = Z.evaluate(x, y);
+				int pixelPos = (int)y * m_Width + (int)x;
+
+				if (m_zBuffer[pixelPos] <= z)
+				{
+					m_zBuffer[pixelPos] = z;
+					Color color = Color(r, g, b);
+					SetPixel(x, y, color);
+				}
 			}
 		}
 	}
@@ -235,4 +271,23 @@ void Rasterizer::SetViewMode(ViewMode mode)
 void Rasterizer::SetLineColor(LineColor color)
 {
 	m_LineColor = color;
+}
+
+void Rasterizer::ClearZBuffer()
+{
+	if (m_zBuffer != 0)
+	{
+		delete[] m_zBuffer;
+		m_zBuffer = 0;
+	}
+
+	int size = m_Width * m_Height;
+
+	m_zBuffer = new float[size];
+	
+	// set default values.
+	for (int i = 0; i < size; i++)
+	{
+		m_zBuffer[i] = 0.0f;
+	}
 }

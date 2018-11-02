@@ -71,9 +71,11 @@ int main(int argc, char *argv[])
 	Rasterizer rasterizer;
 	rasterizer.SetFrameBuffer((uint32_t *)surface->pixels, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-	float r = 0.0f;
+	// Data used for rotation and passed frames.
+	float rotation = 0.0f;
 	unsigned int lastTicks = SDL_GetTicks();
 
+	// Render loop.
 	while (g_Running)
 	{
 		SDL_Event event;
@@ -83,10 +85,11 @@ int main(int argc, char *argv[])
 		// Lock the surface.
 		SDL_LockSurface(surface);
 
+		// Specify a few settings (play around!)
 		rasterizer.Clear();
-		rasterizer.SetRenderMode(RenderMode::Filled);
+		rasterizer.SetRenderMode(RenderMode::Both);
 		rasterizer.SetViewMode(ViewMode::Perspective);
-		rasterizer.SetLineColor(LineColor::Normal);
+		rasterizer.SetLineColor(LineColor::Inverted);
 
 		// Enable rotation
 		bool rotateModel = true;
